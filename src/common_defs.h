@@ -1,6 +1,7 @@
 #pragma once
 
-namespace sigmatcher {
+namespace sigmatcher
+{
 
 
 

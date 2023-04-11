@@ -8,7 +8,9 @@ namespace sigmatcher
 class Utils
 {
  public:
-    static uint32_t Crc32Checksum(uint32_t *data, std::size_t data_len);
+    typedef uint32_t TSignature;
+
+    static TSignature_t Crc32Checksum(uint32_t *data, std::size_t data_len);
 
  private:
     Utils() {}
