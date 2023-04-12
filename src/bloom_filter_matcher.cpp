@@ -2,20 +2,25 @@
 
 using namespace std;
 
-namespace sigmatcher {
+namespace sigmatcher
+{
 
-void BloomFilterMatcher::Add(const string &file_path, uint64_t &duration_ms) {
+void BloomFilterMatcher::Add(const string &file_path)
+{
 }
 
-bool BloomFilterMatcher::FoundMatch(const Signature &sig, uint64_t &duration_ms) const {
+bool BloomFilterMatcher::Check(TSignature sig) const
+{
     return false;
 }
 
-bool BloomFilterMatcher::Serialize(const string &file_path) const {
+bool BloomFilterMatcher::Serialize(const string &file_path) const
+{
     return false;
 }
 
-bool BloomFilterMatcher::Deserialize(const string &file_path) {
+bool BloomFilterMatcher::Deserialize(const string &file_path)
+{
     return false;
 }
 
