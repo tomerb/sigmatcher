@@ -7,15 +7,11 @@ using namespace std;
 namespace sigmatcher
 {
 
-uint32_t Utils::Crc32Checksum(uint32_t *data, size_t data_len)
+uint32_t Utils::Crc32Checksum(const TBuffer &buf)
 {
     boost::crc_32_type crc;
-    crc.process_bytes(data, data_len);
+    crc.process_bytes(buf.data(), buf.size());
     return crc.checksum();
-}
-
-bool Utils::Serialize(std::map<> map)
-{
 }
 
 }

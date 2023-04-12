@@ -1,9 +1,11 @@
-#include "../../src/crc_matcher.h"
+#include "../../src/signature_matcher_factory.h"
 
 using namespace sigmatcher;
 
 int main()
 {
-    CrcMatcher crc_matcher;
+    auto sig_matcher = SignatureMatcherFactory::Create(SMT_CRC32);
+    sig_matcher.Add(&file_handler);
+    //    sig_matcher.Check(file_handler.Get
     return -1;
 }
