@@ -3,6 +3,7 @@
 namespace sigmatcher
 {
 
+    typedef uint32_t TSignature;
 
 
 }

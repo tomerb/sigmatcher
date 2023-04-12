@@ -14,4 +14,8 @@ uint32_t Utils::Crc32Checksum(uint32_t *data, size_t data_len)
     return crc.checksum();
 }
 
+bool Utils::Serialize(std::map<> map)
+{
+}
+
 }
