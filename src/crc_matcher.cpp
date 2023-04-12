@@ -58,8 +58,8 @@ bool CalcSignaturesFromFile(const string &file_path,
          second sig Crc32Calcualte(first 1MB and last 8KB)
     */
 
-    ifstream file(file_path, ios::in | ios::binary);
-    if (!file)
+    ifstream file(file_path, ios::in | ios::binary | ios::ate);
+    if (!file || file.fail())
     {
         cout << file_path << ": " << strerror(errno) << endl;
         return false;
@@ -71,7 +71,7 @@ bool CalcSignaturesFromFile(const string &file_path,
 
     if (file_size == 0)
     {
-        cout << "Illegal file size" << endl;
+        cout << file_path << ": " << "Illegal file size (end=" << end << ")" << endl;
         return false;
     }
 
