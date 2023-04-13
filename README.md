@@ -1,5 +1,5 @@
-# sigmatcher - a library that provides various signature matching implementation
-
+# sigmatcher
+A library that provides various signature matching implementation
 
 ## Pre-requisite:
 - boost/crc
