@@ -144,23 +144,22 @@ void CrcMatcher::Add(const string &file_path)
     }
 }
 
-bool CrcMatcher::Check(TSignature sig) const
+bool CrcMatcher::Check(const std::string &file_path) const
 {
-    /*TSignature sig1;
-    FileSignature file_sig;
-    if (CalcSignaturesFromFile(file, sig1, file_sig))
+    TSignature sig1, sig2;
+    if (CalcSignaturesFromFile(file_path, sig1, sig2))
     {
-        auto found = m_db.find(sig1);
-        if (!found)
+        if (auto found = m_db.find(sig1); found != m_db.end())
         {
-            return false;
+            if (found->second == sig2)
+            {
+                cout << "Check: found signature for " << file_path << endl;
+                return true;
+            }
         }
+    }
 
-        if (found == file_sig)
-        {
-            return true;
-        }
-        }*/
+    cout << "Check: could not find signature for " << file_path << endl;
     return false;
 }
 
