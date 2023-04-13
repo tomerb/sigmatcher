@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <iomanip> // for setprecision()
 #include <cstring>
 
 #include "utils.h"
@@ -39,11 +40,28 @@ static TSignature CalcMidFileSignature(ifstream &file, size_t file_size)
 
 static TSignature CalcHeadTailFileSignature(ifstream &file, size_t file_size)
 {
-    /*auto buf_head = file.read_range(0, HEAD_FILE_RANGE);
-    auto buf_tail = file.read_range(file_size-TAIL_FILE_RANGE, file_size-1);
-    auto buf_both = ;
-    return Utils::Crc32Checksum(buf_both);*/
-    return 0;
+    vector<byte> buf(HEAD_FILE_RANGE + TAIL_FILE_RANGE);
+
+    file.seekg(0, std::ios::beg);
+    if(!file.read((char*)buf.data(), HEAD_FILE_RANGE))
+    {
+        cout << strerror(errno) << endl;
+        return false;
+    }
+
+    file.seekg(file_size - TAIL_FILE_RANGE);
+    if(!file.read((char*)buf.data(), TAIL_FILE_RANGE))
+    {
+        cout << strerror(errno) << endl;
+        return false;
+    }
+
+    return Utils::Crc32Checksum(buf);
+}
+
+void PrintSignatures(TSignature sig1, TSignature sig2)
+{
+    cout << std::hex << "sig1=0x" << sig1 << ", sig2=0x" << sig2 << endl;
 }
 
 bool CalcSignaturesFromFile(const string &file_path,
@@ -75,6 +93,8 @@ bool CalcSignaturesFromFile(const string &file_path,
         return false;
     }
 
+    cout << "File size is " << setprecision(3) << static_cast<float>(file_size)/1000/1024 << " MB. ";
+
     if (file_size < TOP_FILE_SIZE)
     {
         vector<byte> buf(file_size);
@@ -88,20 +108,26 @@ bool CalcSignaturesFromFile(const string &file_path,
 
         if (file_size < BOTTOM_FILE_SIZE)
         {
+            cout << "Generating a single signature: ";
+            PrintSignatures(sig_all, 0);
             sig1 = sig_all;
             sig2 = 0;
         }
         else
         {
+            cout << "Generating two signature with full content: ";
             auto sig_mid = CalcMidFileSignature(file, file_size);
+            PrintSignatures(sig_mid, sig_all);
             sig1 = sig_mid;
             sig2 = sig_all;
         }
     }
     else
     {
+        cout << "Generating two signature with partial content: ";
         auto sig_mid = CalcMidFileSignature(file, file_size);
         auto sig_head_tail = CalcHeadTailFileSignature(file, file_size);
+        PrintSignatures(sig_mid, sig_head_tail);
         sig1 = sig_mid;
         sig2 = sig_head_tail;
     }
