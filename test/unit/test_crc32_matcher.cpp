@@ -3,20 +3,24 @@
 
 #include "../../src/signature_matcher_factory.h"
 
+const std::string SMALL_FILE = "samples/small.dat";
+const std::string MEDIUM_FILE = "samples/medium.dat";
+const std::string LARGE_FILE = "samples/large.dat";
+
 using namespace sigmatcher;
 
 BOOST_AUTO_TEST_CASE(check_same_file)
 {
     auto sig_matcher =
         SignatureMatcherFactory::Create(SignatureMatcherType::SMT_CRC32);
-    sig_matcher->Add("mal_test.dat");
-    BOOST_TEST(sig_matcher->Check("mal_test.dat"));
+    sig_matcher->Add(SMALL_FILE);
+    BOOST_TEST(sig_matcher->Check(SMALL_FILE));
 }
 
-BOOST_AUTO_TEST_CASE(check_different__file)
+BOOST_AUTO_TEST_CASE(check_different_file)
 {
     auto sig_matcher =
         SignatureMatcherFactory::Create(SignatureMatcherType::SMT_CRC32);
-    sig_matcher->Add("mal_test.dat");
-    BOOST_TEST(!sig_matcher->Check("ben_test.dat"));
+    sig_matcher->Add(MEDIUM_FILE);
+    BOOST_TEST(!sig_matcher->Check(LARGE_FILE));
 }
