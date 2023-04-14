@@ -165,12 +165,40 @@ bool CrcMatcher::Check(const std::string &file_path) const
 
 bool CrcMatcher::Serialize(const string &file_path) const
 {
-    return false;
+    ofstream file(file_path, ios::out);
+    for (auto sig : m_db)
+    {
+        file << hex << sig.first << " " << sig.second << endl;
+    }
+    file.close();
+    return true;
 }
 
 bool CrcMatcher::Deserialize(const string &file_path)
 {
-    return false;
+    ifstream file(file_path, ios::in);
+    if (!file)
+    {
+        cout << "Deserialize: file " << file_path << " not found" << endl;
+        return false;
+    }
+
+    string line;
+    while (getline(file, line))
+    {
+        istringstream iss(line);
+        uint32_t sig1, sig2;
+        if (!(iss >> hex >> sig1 >> sig2))
+        {
+            cout << "Deserialize: failed reading from file " << file_path << endl;
+            m_db.clear();
+            return false;
+        }
+
+        m_db[sig1] = sig2;
+    }
+
+    return true;
 }
 
 }
