@@ -9,7 +9,7 @@ void BloomFilterMatcher::Add(const string &file_path)
 {
 }
 
-bool BloomFilterMatcher::Check(TSignature sig) const
+bool BloomFilterMatcher::Check(const string &file_path) const
 {
     return false;
 }

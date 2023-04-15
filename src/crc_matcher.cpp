@@ -93,7 +93,7 @@ bool CalcSignaturesFromFile(const string &file_path,
         return false;
     }
 
-    cout << "File size is " << setprecision(3) << static_cast<float>(file_size)/1000/1024 << " MB. ";
+    //cout << "File size is " << setprecision(3) << static_cast<float>(file_size)/1000/1024 << " MB. ";
 
     if (file_size < TOP_FILE_SIZE)
     {
@@ -108,26 +108,26 @@ bool CalcSignaturesFromFile(const string &file_path,
 
         if (file_size < BOTTOM_FILE_SIZE)
         {
-            cout << "Generating a single signature: ";
-            PrintSignatures(sig_all, 0);
+            //cout << "Generating a single signature: ";
+            //PrintSignatures(sig_all, 0);
             sig1 = sig_all;
             sig2 = 0;
         }
         else
         {
-            cout << "Generating two signature with full content: ";
+            //cout << "Generating two signature with full content: ";
             auto sig_mid = CalcMidFileSignature(file, file_size);
-            PrintSignatures(sig_mid, sig_all);
+            //PrintSignatures(sig_mid, sig_all);
             sig1 = sig_mid;
             sig2 = sig_all;
         }
     }
     else
     {
-        cout << "Generating two signature with partial content: ";
+        //cout << "Generating two signature with partial content: ";
         auto sig_mid = CalcMidFileSignature(file, file_size);
         auto sig_head_tail = CalcHeadTailFileSignature(file, file_size);
-        PrintSignatures(sig_mid, sig_head_tail);
+        //PrintSignatures(sig_mid, sig_head_tail);
         sig1 = sig_mid;
         sig2 = sig_head_tail;
     }
@@ -153,13 +153,13 @@ bool CrcMatcher::Check(const std::string &file_path) const
         {
             if (found->second == sig2)
             {
-                cout << "Check: found signature for " << file_path << endl;
+                //cout << "Check: found signature for " << file_path << endl;
                 return true;
             }
         }
     }
 
-    cout << "Check: could not find signature for " << file_path << endl;
+    //cout << "Check: could not find signature for " << file_path << endl;
     return false;
 }
 

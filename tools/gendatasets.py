@@ -25,8 +25,8 @@ class Dataset:
     file_max_size_kb: int
     output_dir: str
 
-malicious_config = Dataset("malicious", 5, 8, 5000, "./malicious_dataset")
-benign_config = Dataset("benign", 5, 100, 10000, "./benign_dataset")
+malicious_config = Dataset("malicious", 500, 8, 5000, "./malicious_dataset")
+benign_config = Dataset("benign", 2000, 100, 10000, "./benign_dataset")
 
 def gen_random_file(size_min_kb, size_max_kb, output_dir):
     outfile = output_dir + "/" + str(uuid4()) + ".dat"
