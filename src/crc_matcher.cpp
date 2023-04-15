@@ -59,14 +59,14 @@ static TSignature CalcHeadTailFileSignature(ifstream &file, size_t file_size)
     return Utils::Crc32Checksum(buf);
 }
 
-void PrintSignatures(TSignature sig1, TSignature sig2)
+static void PrintSignatures(TSignature sig1, TSignature sig2)
 {
     cout << std::hex << "sig1=0x" << sig1 << ", sig2=0x" << sig2 << endl;
 }
 
-bool CalcSignaturesFromFile(const string &file_path,
-                            TSignature &sig1,
-                            TSignature &sig2)
+static bool CalcSignaturesFromFile(const string &file_path,
+                                   TSignature &sig1,
+                                   TSignature &sig2)
 {
     /*
       1. if file size < 8KB => Crc32Calculate(file)
