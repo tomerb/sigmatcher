@@ -1,0 +1,3 @@
+[submodule "libs/smhasher"]
+	path = libs/smhasher
+	url = ../../aappleby/smhasher
