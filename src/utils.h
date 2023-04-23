@@ -15,9 +15,7 @@ class Utils
     static bool Sha256File(const std::string &file_path,
                            unsigned char hash[SHA256_SIZE_BYTES]);
     static std::string Sha256ToString(const unsigned char hash[SHA256_SIZE_BYTES]);
-    static bool Murmur3(const unsigned char *buf,
-                        size_t buf_len,
-                        unsigned char hash[MURMURHASH3_SIZE_BYTES]);
+    static TSignature Murmur3(const unsigned char *buf, size_t buf_len);
  private:
     Utils() {}
 };

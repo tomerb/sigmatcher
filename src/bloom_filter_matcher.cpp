@@ -22,21 +22,20 @@ BloomFilterMatcher::BloomFilterMatcher(int number_of_items, double fp_probabilit
     m_bitset.reserve(m_m);
 }
 
-static bool CalcFinalSignature(const string &file_path,
-                               unsigned char murmur[MURMURHASH3_SIZE_BYTES])
+bool BloomFilterMatcher::CalcBitsPosition(const string &file_path,
+                                          vector<size_t> &positions) const
 {
     static unsigned char hash[SHA256_SIZE_BYTES];
+
     if (Utils::Sha256File(file_path, hash))
     {
-        auto str_hash = Utils::Sha256ToString(hash);
-        cout << str_hash << endl;
+        //auto str_hash = Utils::Sha256ToString(hash);
+        //cout << str_hash << endl;
 
-        Utils::Murmur3(hash, sizeof(hash), murmur);
         for (int i = 0; i < m_k; i++)
         {
-            unsigned char tmp[MURMURHASH3_SIZE_BYTES];
-            Utils::Murmur3(murmur, sizeof(murmur), tmp);
-            memcpy(murmur, tmp, sizeof(tmp));
+            auto murmur = Utils::Murmur3(hash, sizeof(hash));
+            positions.push_back(murmur % m_m);
         }
 
         return true;
@@ -47,16 +46,28 @@ static bool CalcFinalSignature(const string &file_path,
 
 void BloomFilterMatcher::Add(const string &file_path)
 {
-    static unsigned char murmur[MURMURHASH3_SIZE_BYTES];
-    if (CalcFinalSignature(file_path, murmur))
+    vector<size_t> positions(m_k);
+    if (CalcBitsPosition(file_path, positions))
     {
+        for (auto &p : positions)
+        {
+            m_bitset[p] = true;
+        }
     }
 }
 
 bool BloomFilterMatcher::Check(const string &file_path) const
 {
-    cout << file_path << endl;
-    return false;
+    vector<size_t> positions(m_k);
+    if (CalcBitsPosition(file_path, positions))
+    {
+        for (auto &p : positions)
+        {
+            if (!m_bitset[p]) return false;
+        }
+    }
+
+    return true;
 }
 
 bool BloomFilterMatcher::Serialize(const string &file_path) const

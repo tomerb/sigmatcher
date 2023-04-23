@@ -29,6 +29,9 @@ private:
 
     // Number of hash functions
     int m_k;
+
+    bool CalcBitsPosition(const std::string &file_path,
+                          std::vector<size_t> &positions) const;
 };
 
 }
