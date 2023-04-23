@@ -16,17 +16,18 @@ uint32_t Utils::Crc32Checksum(const TBuffer &buf)
     return crc.checksum();
 }
 
-static void sha256_hash_string (unsigned char hash[32],
-                                unsigned char outputBuffer[65])
+string Utils::Sha256ToString(const unsigned char hash[SHA256_SIZE_BYTES])
 {
-    int i = 0;
+    unsigned char str_hash[SHA256_SIZE_BYTES*2+1];
 
-    for(i = 0; i < 32; i++)
+    for(int i = 0; i < SHA256_SIZE_BYTES; i++)
     {
-        sprintf((char*)outputBuffer + (i * 2), "%02x", hash[i]);
+        sprintf((char*)str_hash + (i * 2), "%02x", hash[i]);
     }
 
-    outputBuffer[64] = 0;
+    str_hash[64] = 0;
+
+    return string(reinterpret_cast<char*>(str_hash), sizeof(str_hash));
 }
 
 static bool UpdateDigest(EVP_MD_CTX *mdctx, const string &file_path)
@@ -57,7 +58,8 @@ static bool UpdateDigest(EVP_MD_CTX *mdctx, const string &file_path)
 }
 
 // Copied from https://stackoverflow.com/questions/2262386/generate-sha256-with-openssl-and-c/10632725
-bool Utils::Sha256File(const string &file_path, unsigned char outputBuffer[65])
+bool Utils::Sha256File(const string &file_path,
+                       unsigned char hash[SHA256_SIZE_BYTES])
 {
     EVP_MD_CTX *mdctx;
 
@@ -81,9 +83,9 @@ bool Utils::Sha256File(const string &file_path, unsigned char outputBuffer[65])
         return false;
     }
 
-    unsigned char hash[32];
     unsigned int hash_len;
-    if(1 != EVP_DigestFinal_ex(mdctx, hash, &hash_len))
+    if(1 != EVP_DigestFinal_ex(mdctx, hash, &hash_len) ||
+       hash_len != SHA256_SIZE_BYTES)
     {
         cout << "Failed in EVP_DigestFinal_ex" << endl;
         EVP_MD_CTX_free(mdctx);
@@ -91,8 +93,6 @@ bool Utils::Sha256File(const string &file_path, unsigned char outputBuffer[65])
     }
 
     EVP_MD_CTX_free(mdctx);
-
-    sha256_hash_string(hash, outputBuffer);
 
     return true;
 }

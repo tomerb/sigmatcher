@@ -24,9 +24,12 @@ BloomFilterMatcher::BloomFilterMatcher(int number_of_items, double fp_probabilit
 
 void BloomFilterMatcher::Add(const string &file_path)
 {
-    static unsigned char buffer[65];
-    Utils::Sha256File(file_path, buffer);
-    cout << buffer << endl;
+    static unsigned char hash[SHA256_SIZE_BYTES];
+    if (Utils::Sha256File(file_path, hash))
+    {
+        auto str_hash = Utils::Sha256ToString(hash);
+        cout << str_hash << endl;
+    }
 }
 
 bool BloomFilterMatcher::Check(const string &file_path) const
