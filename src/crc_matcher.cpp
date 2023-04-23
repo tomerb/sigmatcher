@@ -59,10 +59,10 @@ static TSignature CalcHeadTailFileSignature(ifstream &file, size_t file_size)
     return Utils::Crc32Checksum(buf);
 }
 
-static void PrintSignatures(TSignature sig1, TSignature sig2)
+    /*static void PrintSignatures(TSignature sig1, TSignature sig2)
 {
     cout << std::hex << "sig1=0x" << sig1 << ", sig2=0x" << sig2 << endl;
-}
+    }*/
 
 static bool CalcSignaturesFromFile(const string &file_path,
                                    TSignature &sig1,
@@ -127,7 +127,7 @@ static bool CalcSignaturesFromFile(const string &file_path,
         //cout << "Generating two signature with partial content: ";
         auto sig_mid = CalcMidFileSignature(file, file_size);
         auto sig_head_tail = CalcHeadTailFileSignature(file, file_size);
-        PrintSignatures(sig_mid, sig_head_tail);
+        //PrintSignatures(sig_mid, sig_head_tail);
         sig1 = sig_mid;
         sig2 = sig_head_tail;
     }

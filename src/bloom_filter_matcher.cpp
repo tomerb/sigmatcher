@@ -1,6 +1,7 @@
 #include "bloom_filter_matcher.h"
 
 #include <math.h>
+#include <fstream>
 #include <iostream>
 
 #include "utils.h"
@@ -72,14 +73,31 @@ bool BloomFilterMatcher::Check(const string &file_path) const
 
 bool BloomFilterMatcher::Serialize(const string &file_path) const
 {
-    cout << file_path << endl;
-    return false;
+    ofstream file(file_path, ios::out);
+    for (size_t i = 0; i < m_m;)
+    {
+        int c;
+        for (int j = 32; j > 0; j--)
+        {
+            if (i == m_m) break;
+            c |= m_bitset[i++] << j;
+        }
+        file << c;
+    }
+    file.close();
+    return true;
 }
 
 bool BloomFilterMatcher::Deserialize(const string &file_path)
 {
-    cout << file_path << endl;
-    return false;
+    ifstream file(file_path, ios::in);
+    if (!file)
+    {
+        cout << "Deserialize: file " << file_path << " not found" << endl;
+        return false;
+    }
+
+    return true;
 }
 
 }
