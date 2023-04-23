@@ -26,21 +26,24 @@ void BloomFilterMatcher::Add(const string &file_path)
 {
     static unsigned char buffer[65];
     Utils::Sha256File(file_path, buffer);
-    //printf("%s\n", buffer);
+    cout << buffer << endl;
 }
 
 bool BloomFilterMatcher::Check(const string &file_path) const
 {
+    cout << file_path << endl;
     return false;
 }
 
 bool BloomFilterMatcher::Serialize(const string &file_path) const
 {
+    cout << file_path << endl;
     return false;
 }
 
 bool BloomFilterMatcher::Deserialize(const string &file_path)
 {
+    cout << file_path << endl;
     return false;
 }
 

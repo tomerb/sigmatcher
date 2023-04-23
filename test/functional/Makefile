@@ -39,7 +39,7 @@
 #
 PRG_SUFFIX_FLAG := 0
 #
-LDFLAGS := -L../../src -lsigmatcher -lcrypto
+LDFLAGS := -L../../lib -lsigmatcher -lcrypto
 CFLAGS_INC := -I../../src
 CXXFLAGS := -g -Wall $(CFLAGS_INC) -std=c++17
 CC := g++

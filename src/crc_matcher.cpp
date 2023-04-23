@@ -127,7 +127,7 @@ static bool CalcSignaturesFromFile(const string &file_path,
         //cout << "Generating two signature with partial content: ";
         auto sig_mid = CalcMidFileSignature(file, file_size);
         auto sig_head_tail = CalcHeadTailFileSignature(file, file_size);
-        //PrintSignatures(sig_mid, sig_head_tail);
+        PrintSignatures(sig_mid, sig_head_tail);
         sig1 = sig_mid;
         sig2 = sig_head_tail;
     }
