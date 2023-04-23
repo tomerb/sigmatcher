@@ -3,6 +3,7 @@
 #include <boost/crc.hpp>
 #include <openssl/evp.h>
 #include <iostream>
+#include <MurmurHash3.h>
 
 using namespace std;
 
@@ -94,6 +95,16 @@ bool Utils::Sha256File(const string &file_path,
 
     EVP_MD_CTX_free(mdctx);
 
+    return true;
+}
+
+static const uint32_t murmur3_seed = 0x12345678;
+
+bool Utils::Murmur3(const unsigned char *buf,
+                    size_t buf_len,
+                    unsigned char hash[MURMURHASH3_SIZE_BYTES])
+{
+    MurmurHash3_x64_128(buf, buf_len, murmur3_seed, hash);
     return true;
 }
 
