@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(comapre_size)
     BOOST_TEST(crc_size > bf_size);
 }
 
-/*
+
 BOOST_AUTO_TEST_CASE(deserialize_crc32)
 {
     auto sig_matcher =
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(deserialize_crc32)
         BOOST_TEST(!sig_matcher->Check(file.path()));
     }
 
-    BOOST_TEST(sig_matcher->Deserialize("./crc32.db"));
+    BOOST_TEST(sig_matcher->Deserialize(CRC32_FILENAME));
 
     for (const auto& file : directory_iterator(MALICIOUS_DATASET_DIR))
     {
@@ -84,4 +84,3 @@ BOOST_AUTO_TEST_CASE(deserialize_crc32)
         BOOST_TEST(!sig_matcher->Check(file.path()));
     }
 }
-*/
