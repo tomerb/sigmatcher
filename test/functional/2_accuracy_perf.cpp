@@ -3,28 +3,47 @@
 
 #include "test_common.h"
 
-BOOST_AUTO_TEST_CASE(deserialize_crc32)
+static unique_ptr<SignatureMatcher> LoadDbFile(SignatureMatcherType type,
+                                               const string &filename)
 {
-    auto sig_matcher =
-        SignatureMatcherFactory::Create(SignatureMatcherType::SMT_CRC32);
+    BOOST_REQUIRE(filesystem::exists(filename));
 
-    for (const auto& file : directory_iterator(MALICIOUS_DATASET_DIR))
+    auto sig_matcher = SignatureMatcherFactory::Create(type);
+    BOOST_REQUIRE((sig_matcher != nullptr));
+
+    BOOST_REQUIRE(sig_matcher->Deserialize(filename));
+
+    return sig_matcher;
+}
+
+static void CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
+                         const string &dataset_dir,
+                         bool exists)
+{
+    BOOST_REQUIRE(filesystem::exists(dataset_dir));
+
+    bool has_files = false;
+    for (const auto &file : directory_iterator(dataset_dir))
     {
-        //cout << file.path() << endl;
-        BOOST_TEST(!sig_matcher->Check(file.path()));
+        has_files = true;
+        BOOST_TEST(sig_matcher->Check(file.path()) == exists);
     }
 
-    BOOST_TEST(sig_matcher->Deserialize(CRC32_FILENAME));
+    BOOST_REQUIRE(has_files);
+}
 
-    for (const auto& file : directory_iterator(MALICIOUS_DATASET_DIR))
-    {
-        //cout << file.path() << endl;
-        BOOST_TEST(sig_matcher->Check(file.path()));
-    }
+static void CheckAllDatasets(const unique_ptr<SignatureMatcher> &sig_matcher)
+{
+    CheckDataset(sig_matcher, MALICIOUS_DATASET_DIR, true);
+    CheckDataset(sig_matcher, BENIGN_DATASET_DIR, false);
+}
 
-    for (const auto& file : directory_iterator(BENIGN_DATASET_DIR))
-    {
-        //cout << file.path() << endl;
-        BOOST_TEST(!sig_matcher->Check(file.path()));
-    }
+BOOST_AUTO_TEST_CASE(test_signatures_crc32)
+{
+    CheckAllDatasets(LoadDbFile(SignatureMatcherType::SMT_CRC32, CRC32_FILENAME));
+}
+
+BOOST_AUTO_TEST_CASE(test_signatures_bf)
+{
+    CheckAllDatasets(LoadDbFile(SignatureMatcherType::SMT_BLOOM_FILTER, BF_FILENAME));
 }
