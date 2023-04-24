@@ -76,3 +76,6 @@ else
 	$(RM) $(BINS)
 endif
 ##
+
+run: all
+	./$(PRGS)

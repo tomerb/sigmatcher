@@ -45,7 +45,7 @@ smhasher:
 	@cd $(SMHASHER_DIR)/build && cmake ../src && make -j4
 
 test: $(OUT_FILE_NAME)
-	@make -C $(TEST_DIR)
+	@make -C $(TEST_DIR) run
 
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(OUT_DIR)/$(OUT_FILE_NAME) Makefile.bak $(SMHASHER_DIR)/build
