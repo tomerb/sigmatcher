@@ -15,3 +15,16 @@ const string MALICIOUS_DATASET_DIR = "../../tools/malicious_dataset";
 
 const string CRC32_FILENAME = "./crc32.db";
 const string BF_FILENAME = "./bloom.db";
+
+unique_ptr<SignatureMatcher> LoadDbFile(SignatureMatcherType type,
+                                        const string &filename)
+{
+    BOOST_REQUIRE(filesystem::exists(filename));
+
+    auto sig_matcher = SignatureMatcherFactory::Create(type);
+    BOOST_REQUIRE((sig_matcher != nullptr));
+
+    BOOST_REQUIRE(sig_matcher->Deserialize(filename));
+
+    return sig_matcher;
+}

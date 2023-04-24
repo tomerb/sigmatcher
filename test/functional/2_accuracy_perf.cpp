@@ -3,19 +3,6 @@
 
 #include "test_common.h"
 
-static unique_ptr<SignatureMatcher> LoadDbFile(SignatureMatcherType type,
-                                               const string &filename)
-{
-    BOOST_REQUIRE(filesystem::exists(filename));
-
-    auto sig_matcher = SignatureMatcherFactory::Create(type);
-    BOOST_REQUIRE((sig_matcher != nullptr));
-
-    BOOST_REQUIRE(sig_matcher->Deserialize(filename));
-
-    return sig_matcher;
-}
-
 static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
                          const string &dataset_dir,
                          bool expected)
