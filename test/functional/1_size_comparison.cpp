@@ -1,20 +1,7 @@
-#define BOOST_TEST_MODULE sigmatcher_serializations
+#define BOOST_TEST_MODULE sigmatcher_size_comparison
 #include <boost/test/included/unit_test.hpp>
 
-#include <filesystem>
-#include <chrono>
-
-#include "../../src/signature_matcher_factory.h"
-
-using namespace sigmatcher;
-using namespace std;
-using directory_iterator = std::filesystem::recursive_directory_iterator;
-
-const string BENIGN_DATASET_DIR = "../../tools/benign_dataset";
-const string MALICIOUS_DATASET_DIR = "../../tools/malicious_dataset";
-
-const string CRC32_FILENAME = "./crc32.db";
-const string BF_FILENAME = "./bloom.db";
+#include "test_common.h"
 
 static unique_ptr<SignatureMatcher> PopulateDbTimed(SignatureMatcherType type)
 {
@@ -56,31 +43,4 @@ BOOST_AUTO_TEST_CASE(comapre_size)
     cout << "CRC32 DB file size: " << crc_size << " bytes" << endl;
     cout << "Bloom filter DB file size: " << bf_size << " bytes" << endl;
     BOOST_TEST(crc_size > bf_size);
-}
-
-
-BOOST_AUTO_TEST_CASE(deserialize_crc32)
-{
-    auto sig_matcher =
-        SignatureMatcherFactory::Create(SignatureMatcherType::SMT_CRC32);
-
-    for (const auto& file : directory_iterator(MALICIOUS_DATASET_DIR))
-    {
-        //cout << file.path() << endl;
-        BOOST_TEST(!sig_matcher->Check(file.path()));
-    }
-
-    BOOST_TEST(sig_matcher->Deserialize(CRC32_FILENAME));
-
-    for (const auto& file : directory_iterator(MALICIOUS_DATASET_DIR))
-    {
-        //cout << file.path() << endl;
-        BOOST_TEST(sig_matcher->Check(file.path()));
-    }
-
-    for (const auto& file : directory_iterator(BENIGN_DATASET_DIR))
-    {
-        //cout << file.path() << endl;
-        BOOST_TEST(!sig_matcher->Check(file.path()));
-    }
 }

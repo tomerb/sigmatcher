@@ -71,8 +71,8 @@ endif
 ##
 veryclean:
 ifeq ($(PRG_SUFFIX_FLAG),0)
-	$(RM) $(PRGS)
+	$(RM) $(PRGS) *.db
 else
-	$(RM) $(BINS)
+	$(RM) $(BINS) *.db
 endif
 ##
