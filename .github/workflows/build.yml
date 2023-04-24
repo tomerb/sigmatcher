@@ -21,6 +21,7 @@ jobs:
       id: install-boost
       with:
           boost_version: 1.81.0
+          boost_install_dir: /home/runner/work/sigmatcher/sigmatcher/boost/boost-1.81.0-ubuntu-18.04-gcc-static+shared-x86
     - name: make
       run: make
     - name: make test
