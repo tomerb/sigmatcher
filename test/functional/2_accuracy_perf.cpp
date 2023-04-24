@@ -18,26 +18,51 @@ static unique_ptr<SignatureMatcher> LoadDbFile(SignatureMatcherType type,
 
 static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
                          const string &dataset_dir,
-                         bool exists)
+                         bool expected)
 {
     BOOST_REQUIRE(filesystem::exists(dataset_dir));
 
-    bool has_files = false;
-    int failed_checks = 0;
+    double total_checks = 0, tn = 0, tp = 0, fp = 0, fn = 0;
     for (const auto &file : directory_iterator(dataset_dir))
     {
-        has_files = true;
-        if (sig_matcher->Check(file.path()) != exists)
+        total_checks++;
+
+        if (sig_matcher->Check(file.path()))
         {
-            failed_checks++;
+            if (expected)
+            {
+                tp++;
+            }
+            else
+            {
+                fp++;
+            }
+        }
+        else
+        {
+            if (expected)
+            {
+                fn++;
+            }
+            else
+            {
+                tn++;
+            }
         }
     }
 
-    BOOST_REQUIRE(has_files);
+    BOOST_REQUIRE(total_checks > 0);
 
-    cout << failed_checks << " tests failed" << endl;
+    cout << "Conducted " << total_checks << " tests" << endl;
 
-    return failed_checks == 0;
+    cout << "TN = " << tn << ", FP = " << fp << ", TP = " << tp << ", FN = " << fn << endl;
+    auto tnr = tn ? (tn / (tn + fp)) : 0;
+    auto fpr = fp ? (fp / (tn + fp)) : 0;
+    auto tpr = tp ? (tp / (tp + fn)) : 0;
+    auto fnr = fn ? (fn / (tp + fn)) : 0;
+    cout << "TNR = " << tnr << ", FPR = " << fpr << ", TPR = " << tpr << ", FNR = " << fnr << endl;
+
+    return (fp == 0) && (fn == 0);
 }
 
 static bool CheckAllDatasets(const unique_ptr<SignatureMatcher> &sig_matcher)
