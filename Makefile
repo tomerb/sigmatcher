@@ -18,6 +18,8 @@ OBJ_DIR=./obj
 
 OUT_DIR=./lib
 
+TEST_DIR=./test/unit
+
 # Enumerating of every *.cpp as *.o and using that as dependency.
 # filter list of .c files in a directory.
 # FILES =dump_l.c \
@@ -42,7 +44,11 @@ smhasher:
 	@mkdir -p $(SMHASHER_DIR)/build
 	@cd $(SMHASHER_DIR)/build && cmake ../src && make -j4
 
+test: $(OUT_FILE_NAME)
+	@make -C $(TEST_DIR)
+
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(OUT_DIR)/$(OUT_FILE_NAME) Makefile.bak $(SMHASHER_DIR)/build
+	@make -C $(TEST_DIR) veryclean
 
 rebuild: clean build
