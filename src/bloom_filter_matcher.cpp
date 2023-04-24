@@ -15,12 +15,11 @@ BloomFilterMatcher::BloomFilterMatcher(int number_of_items, double fp_probabilit
     m_n(number_of_items),
     m_p(fp_probability),
     m_m(ceil((m_n * log(m_p)) / log(1 / pow(2, log(2))))),
-    m_k(round((m_m / m_n) * log(2)))
+    m_k(round((m_m / m_n) * log(2))),
+    m_bitset(m_m, false)
 {
     cout << "Creating a bloom filter signature matcher with n=" << m_n <<
         ", p=" << m_p << ", m=" << m_m << ", k=" << m_k << endl;
-
-    m_bitset.reserve(m_m);
 }
 
 bool BloomFilterMatcher::CalcBitsPosition(const string &file_path,

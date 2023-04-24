@@ -16,8 +16,6 @@ class BloomFilterMatcher : public SignatureMatcher
     virtual bool Serialize(const std::string &file_path) const;
     virtual bool Deserialize(const std::string &file_path);
 private:
-    std::vector<bool> m_bitset;
-
     // Number of items in the filter
     int m_n;
 
@@ -29,6 +27,8 @@ private:
 
     // Number of hash functions
     int m_k;
+
+    std::vector<bool> m_bitset;
 
     bool CalcBitsPosition(const std::string &file_path,
                           std::vector<size_t> &positions) const;
