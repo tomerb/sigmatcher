@@ -20,6 +20,11 @@ namespace
 
 namespace sigmatcher {
 
+CrcMatcher::CrcMatcher()
+{
+    cout << "Creating a CRC32 signature matcher" << endl;
+}
+
 static TSignature CalcMidFileSignature(ifstream &file, size_t file_size)
 {
     if (file_size < MIDDLE_FILE_RANGE*2)
