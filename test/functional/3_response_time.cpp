@@ -32,10 +32,11 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
 
     BOOST_REQUIRE(total_checks > 0);
 
-    std::chrono::duration<double> avg = total_time / total_checks;
+    chrono::duration<double> avg_time = total_time / total_checks;
 
-    cout << "Conducted " << total_checks << " tests, with average execution time of " <<
-        avg.count() << " seconds)" << endl;;
+    cout << "Conducted " << total_checks << " tests with total execution time of " <<
+        chrono::duration<double>(total_time).count() << " seconds, and average execution time of " <<
+        avg_time.count() << " seconds" << endl;
 
     return had_failures;
 }
@@ -45,12 +46,16 @@ static void LoadAndCheckDataset(const string &dataset_dir, bool expected)
     {
         auto sig_matcher =
             LoadDbFile(SignatureMatcherType::SMT_CRC32, CRC32_FILENAME);
+        cout << "*** testing CRC32 matcher response time for files under " <<
+            dataset_dir << " ***" << endl;
         BOOST_TEST(CheckDataset(sig_matcher, dataset_dir, expected));
     }
 
     {
         auto sig_matcher =
             LoadDbFile(SignatureMatcherType::SMT_BLOOM_FILTER, BF_FILENAME);
+        cout << "*** testing bloom filter matcher response time for files under " <<
+            dataset_dir << " ***" << endl;
         BOOST_TEST(CheckDataset(sig_matcher, dataset_dir, expected));
     }
 }
