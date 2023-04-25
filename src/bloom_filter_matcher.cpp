@@ -3,6 +3,7 @@
 #include <math.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "utils.h"
 
@@ -73,17 +74,25 @@ bool BloomFilterMatcher::Check(const string &file_path) const
 bool BloomFilterMatcher::Serialize(const string &file_path) const
 {
     ofstream file(file_path, ios::out);
+    if (!file)
+    {
+        cout << "Serialize: file " << file_path << " cannot be opened for writing" << endl;
+        return false;
+    }
+
     for (size_t i = 0; i < m_m;)
     {
-        int c;
-        for (int j = 32; j > 0; j--)
+        char c;
+        for (int j = sizeof(c)*8-1; j >= 0; j--)
         {
             if (i == m_m) break;
             c |= m_bitset[i++] << j;
         }
         file << c;
     }
+
     file.close();
+
     return true;
 }
 
@@ -95,6 +104,19 @@ bool BloomFilterMatcher::Deserialize(const string &file_path)
         cout << "Deserialize: file " << file_path << " not found" << endl;
         return false;
     }
+
+    m_bitset.clear();
+
+    char c;
+    while (file.read(&c, sizeof(c)))
+    {
+        for (int i = sizeof(c)*8-1; i >= 0; i--)
+        {
+            m_bitset.push_back(c >> i);
+        }
+    }
+
+    file.close();
 
     return true;
 }
