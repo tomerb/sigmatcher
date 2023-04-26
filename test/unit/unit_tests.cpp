@@ -13,6 +13,7 @@ const string DUMMY_FILE = "samples/dummy.dat";
 
 const string CRC32_FILENAME = "./crc32.db";
 const string BF_FILENAME = "./bloom.db";
+const string COMPARE_FILENAME = "./compare.db";
 
 static bool AddAndCheck(SignatureMatcherType matcher_type,
                         const string &file_to_add,
@@ -45,6 +46,17 @@ BOOST_AUTO_TEST_CASE(bf_add_and_check)
     AddAndCheckSuite(SignatureMatcherType::SMT_BLOOM_FILTER);
 }
 
+static void CompareFiles(const string &filename1, const string &filename2)
+{
+    ifstream ifs1(filename1);
+    ifstream ifs2(filename2);
+
+    istream_iterator<char> b1(ifs1), e1;
+    istream_iterator<char> b2(ifs2), e2;
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(b1, e1, b2, e2);
+}
+
 static void SerdeSuite(SignatureMatcherType matcher_type, const string &filename)
 {
     auto sig_matcher_pre_serde = SignatureMatcherFactory::Create(matcher_type);
@@ -65,6 +77,9 @@ static void SerdeSuite(SignatureMatcherType matcher_type, const string &filename
     BOOST_TEST(sig_matcher_post_serde->Check(MEDIUM_FILE));
     BOOST_TEST(sig_matcher_post_serde->Check(LARGE_FILE));
     BOOST_TEST(!sig_matcher_post_serde->Check(DUMMY_FILE));
+
+    BOOST_TEST(sig_matcher_post_serde->Serialize(COMPARE_FILENAME));
+    CompareFiles(filename, COMPARE_FILENAME);
 }
 
 BOOST_AUTO_TEST_CASE(crc32_serde)
