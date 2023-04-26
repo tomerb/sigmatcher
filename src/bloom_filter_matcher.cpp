@@ -100,27 +100,17 @@ bool BloomFilterMatcher::Serialize(const string &file_path) const
         return false;
     }
 
-    cout << "Serialize " << file_path << endl;
+    file << hex << m_bitset.size() << endl;
 
-    uint32_t to_write = 0;
-    int offset = sizeof(to_write)*8-1;
-    for (bool b : m_bitset)
+    for (size_t i = 0; i < m_bitset.size(); i++)
     {
-        to_write |= b << offset--;
-        if (offset == -1)
+        if (m_bitset[i])
         {
-            if (to_write)
-                cout << "writing " << to_write << endl;
-            file << hex << to_write;
-            offset = sizeof(to_write)*8-1;
-            to_write = 0;
-
+            file << hex << i << endl;
         }
     }
 
     file.close();
-
-    cout << "Serialize end " << file_path << endl;
 
     return true;
 }
@@ -136,32 +126,30 @@ bool BloomFilterMatcher::Deserialize(const string &file_path)
 
     m_bitset.clear();
 
-    char to_read[512];
-    size_t bytes_read = 0;
-    while (true)
+    bool first_line = true;
+    string line;
+    while (getline(file, line))
     {
-        file.read(to_read, sizeof(to_read));
-        cout << "read " << to_read << endl;
-        bytes_read = file.gcount();
-        int i = 0;
-        for (int offset = bytes_read*8-1; offset >= 0; offset--)
+        istringstream iss(line);
+        uint32_t num;
+        if (!(iss >> hex >> num))
         {
-            m_bitset.push_back((to_read[i++] >> offset) & 1);
+            cout << "Deserialize: failed reading from file " << file_path << endl;
+            file.close();
+            m_bitset.clear();
+            return false;
         }
-        if (bytes_read < sizeof(to_read))
+
+        if (first_line)
         {
-            break;
+            m_bitset.resize(num);
+            first_line = false;
+        }
+        else
+        {
+            m_bitset[num] = true;
         }
     }
-    /*while (file >> hex >> to_read)
-    {
-       if (to_read)
-            cout << "reading " << to_read << endl;
-        for (int offset = sizeof(to_read)*8-1; offset >= 0; offset--)
-        {
-            m_bitset.push_back((to_read >> offset) & 1);
-        }
-    }*/
 
     file.close();
 
