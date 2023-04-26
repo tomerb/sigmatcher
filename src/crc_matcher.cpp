@@ -196,12 +196,15 @@ bool CrcMatcher::Deserialize(const string &file_path)
         if (!(iss >> hex >> sig1 >> sig2))
         {
             cout << "Deserialize: failed reading from file " << file_path << endl;
+            file.close();
             m_db.clear();
             return false;
         }
 
         m_db[sig1] = sig2;
     }
+
+    file.close();
 
     return true;
 }
