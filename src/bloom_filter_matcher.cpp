@@ -64,7 +64,7 @@ bool BloomFilterMatcher::CalcBitsPosition(const string &file_path,
 
 void BloomFilterMatcher::Add(const string &file_path)
 {
-    vector<size_t> positions(m_k);
+    vector<size_t> positions;
     if (CalcBitsPosition(file_path, positions))
     {
         for (auto &p : positions)
@@ -76,14 +76,17 @@ void BloomFilterMatcher::Add(const string &file_path)
 
 bool BloomFilterMatcher::Check(const string &file_path) const
 {
-    vector<size_t> positions(m_k);
+    vector<size_t> positions;
     if (CalcBitsPosition(file_path, positions))
     {
-        for (auto &p : positions)
+        for (auto p : positions)
         {
+            cout << p << endl;
             if (!m_bitset[p]) return false;
         }
     }
+
+    cout << "Check passed for " << file_path << endl;
 
     return true;
 }
@@ -97,19 +100,17 @@ bool BloomFilterMatcher::Serialize(const string &file_path) const
         return false;
     }
 
-    for (size_t i = 0; i < m_m;)
+    uint32_t to_write = 0;
+    int offset = sizeof(to_write)-1;
+    for (bool b : m_bitset)
     {
-        char c;
-        for (int j = sizeof(c)*8-1; j >= 0; j--)
+        to_write |= b << offset--;
+        if (!offset)
         {
-            if (i == m_m) break;
-            char tmp = m_bitset[i++];
-            //cout << hex << "tmp=0x" << tmp << endl;
-            c |= tmp << j;
-            //cout << hex << "c=0x" << c << endl;
+            file << to_write;
+            offset = sizeof(to_write)-1;
+            to_write = 0;
         }
-        //break;
-        file << c;
     }
 
     file.close();
@@ -128,12 +129,14 @@ bool BloomFilterMatcher::Deserialize(const string &file_path)
 
     m_bitset.clear();
 
-    char c;
-    while (file.read(&c, sizeof(c)))
+    uint32_t to_read;
+    int offset = sizeof(to_read);
+    while (file >> to_read)
     {
-        for (int i = sizeof(c)*8-1; i >= 0; i--)
+        m_bitset.push_back(to_read >> offset--);
+        if (!offset)
         {
-            m_bitset.push_back(c >> i);
+            offset = sizeof(to_read);
         }
     }
 
