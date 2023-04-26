@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <memory>
+#include <filesystem>
 
 #include "utils.h"
 
@@ -84,22 +86,33 @@ bool BloomFilterMatcher::Check(const string &file_path) const
 
 bool BloomFilterMatcher::Serialize(const string &file_path) const
 {
-    ofstream file(file_path, ios::out);
+    ofstream file(file_path, ios::out | ios::binary);
     if (!file)
     {
         cout << "Serialize: file " << file_path << " cannot be opened for writing" << endl;
         return false;
     }
 
-    file << hex << m_bitset.size() << endl;
-
-    for (size_t i = 0; i < m_bitset.size(); i++)
+    const auto buf_size = m_bitset.size()/8 + (m_bitset.size()%8 ? 1 : 0);
+    auto buf = make_unique<unsigned char[]>(buf_size);
+    int ibuf = 0;
+    int ibyte = 0;
+    for (bool b : m_bitset)
     {
-        if (m_bitset[i])
+        if (ibyte == 8)
         {
-            file << hex << i << endl;
+            ibyte = 0;
+            ibuf++;
         }
+        buf[ibuf] |= b << ibyte++;
     }
+
+    while (ibyte < 8)
+    {
+        buf[ibuf] |= 0 << ibyte++;
+    }
+
+    file.write(reinterpret_cast<const char*>(buf.get()), buf_size);
 
     file.close();
 
@@ -108,39 +121,41 @@ bool BloomFilterMatcher::Serialize(const string &file_path) const
 
 bool BloomFilterMatcher::Deserialize(const string &file_path)
 {
-    ifstream file(file_path, ios::in);
+    ifstream file(file_path, ios::in | ios::binary);
     if (!file)
     {
         cout << "Deserialize: file " << file_path << " not found" << endl;
         return false;
     }
 
+    const auto buf_size = filesystem::file_size(file_path);
+    auto buf = make_unique<unsigned char[]>(buf_size);
+    if (!file.read(reinterpret_cast<char*>(buf.get()), buf_size))
+    {
+        cout << "Deserialize: failed reading file " << file_path << endl;
+        file.close();
+        return false;
+    }
+
     m_bitset.clear();
 
-    bool first_line = true;
-    string line;
-    while (getline(file, line))
+    for (size_t i = 0; i < buf_size; i++)
     {
-        istringstream iss(line);
-        uint32_t num;
-        if (!(iss >> hex >> num))
+        for(int j = 0; j < 8; j++)
         {
-            cout << "Deserialize: failed reading from file " << file_path << endl;
-            file.close();
-            m_bitset.clear();
-            return false;
-        }
-
-        if (first_line)
-        {
-            m_bitset.resize(num);
-            first_line = false;
-        }
-        else
-        {
-            m_bitset[num] = true;
+            m_bitset.push_back(buf[i] & (1 << j));
         }
     }
+
+    /* or:
+    vector<unsigned char> buf(istreambuf_iterator<char>(file), {});
+    for (auto b : buf)
+    {
+        for(int i = 0; i < 8; i++)
+        {
+            m_bitset.push_back(b & (1 << i));
+        }
+    }*/
 
     file.close();
 
