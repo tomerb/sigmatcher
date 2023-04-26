@@ -1,3 +1,4 @@
 unit_tests
 crc32.db
 bloom.db
+compare.db
