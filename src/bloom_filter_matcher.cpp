@@ -39,20 +39,14 @@ bool BloomFilterMatcher::CalcBitsPosition(const string &file_path,
       return false;
     }
 
-    cout << "CalcBitsPosition() for: " << file_path << endl;
-
     static unsigned char hash[SHA256_SIZE_BYTES];
 
     if (Utils::Sha256File(file_path, hash))
     {
-        //auto str_hash = Utils::Sha256ToString(hash);
-        //cout << str_hash << endl;
-
         for (size_t i = 0; i < m_k; i++)
         {
             auto murmur = Utils::Murmur3(hash, sizeof(hash), murmur3_seeds[i]);
             size_t pos = murmur % m_m;
-            cout << "pos[" << i << "]: " << pos << endl;
             positions.push_back(pos);
         }
 
@@ -81,12 +75,9 @@ bool BloomFilterMatcher::Check(const string &file_path) const
     {
         for (auto p : positions)
         {
-            cout << p << endl;
             if (!m_bitset[p]) return false;
         }
     }
-
-    cout << "Check passed for " << file_path << endl;
 
     return true;
 }
