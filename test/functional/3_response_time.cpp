@@ -24,7 +24,7 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
         total_time += (end - start);
         total_checks++;
 
-        if (!result)
+        if (result != expected)
         {
             had_failures = true;
         }
