@@ -9,6 +9,7 @@ using namespace std;
 const string SMALL_FILE = "samples/small.dat";
 const string MEDIUM_FILE = "samples/medium.dat";
 const string LARGE_FILE = "samples/large.dat";
+const string DUMMY_FILE = "samples/dummy.dat";
 
 const string CRC32_FILENAME = "./crc32.db";
 const string BF_FILENAME = "./bloom.db";
@@ -63,6 +64,7 @@ static void SerdeSuite(SignatureMatcherType matcher_type, const string &filename
     BOOST_TEST(sig_matcher_post_serde->Check(SMALL_FILE));
     BOOST_TEST(sig_matcher_post_serde->Check(MEDIUM_FILE));
     BOOST_TEST(sig_matcher_post_serde->Check(LARGE_FILE));
+    BOOST_TEST(!sig_matcher_post_serde->Check(DUMMY_FILE));
 }
 
 BOOST_AUTO_TEST_CASE(crc32_serde)
