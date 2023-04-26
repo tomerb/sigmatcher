@@ -100,20 +100,27 @@ bool BloomFilterMatcher::Serialize(const string &file_path) const
         return false;
     }
 
+    cout << "Serialize " << file_path << endl;
+
     uint32_t to_write = 0;
-    int offset = sizeof(to_write)-1;
+    int offset = sizeof(to_write)*8-1;
     for (bool b : m_bitset)
     {
         to_write |= b << offset--;
-        if (!offset)
+        if (offset == -1)
         {
-            file << to_write;
-            offset = sizeof(to_write)-1;
+            if (to_write)
+                cout << "writing " << to_write << endl;
+            file << hex << to_write;
+            offset = sizeof(to_write)*8-1;
             to_write = 0;
+
         }
     }
 
     file.close();
+
+    cout << "Serialize end " << file_path << endl;
 
     return true;
 }
@@ -129,16 +136,32 @@ bool BloomFilterMatcher::Deserialize(const string &file_path)
 
     m_bitset.clear();
 
-    uint32_t to_read;
-    int offset = sizeof(to_read);
-    while (file >> to_read)
+    char to_read[512];
+    size_t bytes_read = 0;
+    while (true)
     {
-        m_bitset.push_back(to_read >> offset--);
-        if (!offset)
+        file.read(to_read, sizeof(to_read));
+        cout << "read " << to_read << endl;
+        bytes_read = file.gcount();
+        int i = 0;
+        for (int offset = bytes_read*8-1; offset >= 0; offset--)
         {
-            offset = sizeof(to_read);
+            m_bitset.push_back((to_read[i++] >> offset) & 1);
+        }
+        if (bytes_read < sizeof(to_read))
+        {
+            break;
         }
     }
+    /*while (file >> hex >> to_read)
+    {
+       if (to_read)
+            cout << "reading " << to_read << endl;
+        for (int offset = sizeof(to_read)*8-1; offset >= 0; offset--)
+        {
+            m_bitset.push_back((to_read >> offset) & 1);
+        }
+    }*/
 
     file.close();
 
