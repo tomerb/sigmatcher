@@ -7,7 +7,7 @@
 CC = g++
 OUT_FILE_NAME = libsigmatcher.a
 
-CFLAGS = -O0 -g -Wall -Werror -Wextra -c -fPIC
+CFLAGS = -O3 -g -Wall -Werror -Wextra -c -fPIC
 
 SMHASHER_DIR = libs/smhasher
 
