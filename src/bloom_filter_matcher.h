@@ -17,7 +17,7 @@ class BloomFilterMatcher : public SignatureMatcher
     virtual bool Deserialize(const std::string &file_path);
 private:
     // Number of items in the filter
-    int m_n;
+    size_t m_n;
 
     // Probability of false positives
     double m_p;
@@ -26,7 +26,7 @@ private:
     uint32_t m_m;
 
     // Number of hash functions
-    int m_k;
+    size_t m_k;
 
     std::vector<bool> m_bitset;
 

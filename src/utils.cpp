@@ -98,12 +98,10 @@ bool Utils::Sha256File(const string &file_path,
     return true;
 }
 
-static const uint32_t murmur3_seed = 0x12345678;
-
-TSignature Utils::Murmur3(const unsigned char *buf, size_t buf_len)
+TSignature Utils::Murmur3(const unsigned char *buf, size_t buf_len, uint32_t seed)
 {
     TSignature sig;
-    MurmurHash3_x86_32(buf, buf_len, murmur3_seed, &sig);
+    MurmurHash3_x86_32(buf, buf_len, seed, &sig);
     return sig;
 }
 
