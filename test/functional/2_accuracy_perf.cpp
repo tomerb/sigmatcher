@@ -52,22 +52,22 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
     return (fp == 0) && (fn == 0);
 }
 
-static bool CheckAllDatasets(const unique_ptr<SignatureMatcher> &sig_matcher)
+static void CheckAllDatasets(const unique_ptr<SignatureMatcher> &sig_matcher)
 {
-    return CheckDataset(sig_matcher, MALICIOUS_DATASET_DIR, true) &&
-        CheckDataset(sig_matcher, BENIGN_DATASET_DIR, false);
+    BOOST_TEST(CheckDataset(sig_matcher, MALICIOUS_DATASET_DIR, true));
+    BOOST_TEST(CheckDataset(sig_matcher, BENIGN_DATASET_DIR, false));
 }
 
 BOOST_AUTO_TEST_CASE(test_signatures_crc32)
 {
     auto sig_matcher =
         LoadDbFile(SignatureMatcherType::SMT_CRC32, CRC32_FILENAME);
-    BOOST_TEST(CheckAllDatasets(sig_matcher));
+    CheckAllDatasets(sig_matcher);
 }
 
 BOOST_AUTO_TEST_CASE(test_signatures_bf)
 {
     auto sig_matcher =
         LoadDbFile(SignatureMatcherType::SMT_BLOOM_FILTER, BF_FILENAME);
-    BOOST_TEST(CheckAllDatasets(sig_matcher));
+    CheckAllDatasets(sig_matcher);
 }
