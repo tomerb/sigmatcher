@@ -26,6 +26,7 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
 
         if (result != expected)
         {
+            cout << "Failed: file " << file.path() << endl;
             had_failures = true;
         }
     }
@@ -38,7 +39,7 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
         chrono::duration<double>(total_time).count() << " seconds, and average execution time of " <<
         avg_time.count() << " seconds" << endl;
 
-    return had_failures;
+    return !had_failures;
 }
 
 static void LoadAndCheckDataset(const string &dataset_dir, bool expected)
