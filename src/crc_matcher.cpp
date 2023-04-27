@@ -27,11 +27,6 @@ CrcMatcher::CrcMatcher()
 
 static TSignature CalcMidFileSignature(ifstream &file, size_t file_size)
 {
-    if (file_size < MIDDLE_FILE_RANGE*2)
-    {
-        return 0;
-    }
-
     auto mid_file_start = (file_size / 2) - (MIDDLE_FILE_RANGE / 2);
     file.seekg(mid_file_start);
     vector<byte> buf(MIDDLE_FILE_RANGE);
@@ -164,7 +159,8 @@ bool CrcMatcher::Check(const std::string &file_path) const
         }
     }
 
-    //cout << "Check: could not find signature for " << file_path << endl;
+    //cout << "Check: could not find signature for " << file_path <<
+    //    ", sig1=" << sig1 << ", sig2=" << sig2 << endl;
     return false;
 }
 
