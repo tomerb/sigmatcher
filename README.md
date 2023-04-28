@@ -11,7 +11,6 @@ Various signature matching algorithms.
 You can look in the `test` directory to check out a few examples of how to use sigmatcher.
 In general, the following exmpale depict a common usage pattern:
 ```c++
-#include <iostream>
 #include "signature_matcher_factory.h"
 
 int main()
@@ -21,26 +20,27 @@ int main()
     auto sig_matcher =
         sigmatcher::SignatureMatcherFactory::Create(sigmatcher::SignatureMatcherType::SMT_CRC32);
 
-    // Add a file
+    // Add a file to the sigmatcher. Each sigmatcher implementation is free to store the file's
+    // signature in whatever way it sees fit.
     sig_matcher->Add("/path/to/some/file");
 
     // Check if a file matches a known one
     if (sig_matcher->Check("/path/to/another/file"))
     {
-        std::cout << "Match!";
+        // Match!
     }
 
     // Store the matcher's internal DB into persistent sotrage
     if (!sig_matcher->Serialize("signatures.db"))
     {
-        std::cout << "Failed to serialize file";
+        // Failure
         return -1;
     }
 
     // Load a DB into memory
     if (!sig_matcher->Deserialize("signatures.db"))
     {
-        std::cout << "Failed to deserialize file";
+        // Failure
         return -1;
     }
 
