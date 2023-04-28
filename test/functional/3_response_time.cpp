@@ -26,7 +26,6 @@ static bool CheckDataset(const unique_ptr<SignatureMatcher> &sig_matcher,
 
         if (result != expected)
         {
-            cout << "Failed: file " << file.path() << endl;
             had_failures = true;
         }
     }
