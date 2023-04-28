@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./signature_matcher.h"
+#include "signature_matcher.h"
 
 #include <vector>
 

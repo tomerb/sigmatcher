@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <iomanip> // for setprecision()
+#include <iomanip>
 #include <cstring>
 
 #include "utils.h"
@@ -59,11 +59,6 @@ static TSignature CalcHeadTailFileSignature(ifstream &file, size_t file_size)
     return Utils::Crc32Checksum(buf);
 }
 
-    /*static void PrintSignatures(TSignature sig1, TSignature sig2)
-{
-    cout << std::hex << "sig1=0x" << sig1 << ", sig2=0x" << sig2 << endl;
-    }*/
-
 static bool CalcSignaturesFromFile(const string &file_path,
                                    TSignature &sig1,
                                    TSignature &sig2)
@@ -93,8 +88,6 @@ static bool CalcSignaturesFromFile(const string &file_path,
         return false;
     }
 
-    //cout << "File size is " << setprecision(3) << static_cast<float>(file_size)/1000/1024 << " MB. ";
-
     if (file_size < TOP_FILE_SIZE)
     {
         vector<byte> buf(file_size);
@@ -108,26 +101,20 @@ static bool CalcSignaturesFromFile(const string &file_path,
 
         if (file_size < BOTTOM_FILE_SIZE)
         {
-            //cout << "Generating a single signature: ";
-            //PrintSignatures(sig_all, 0);
             sig1 = sig_all;
             sig2 = 0;
         }
         else
         {
-            //cout << "Generating two signature with full content: ";
             auto sig_mid = CalcMidFileSignature(file, file_size);
-            //PrintSignatures(sig_mid, sig_all);
             sig1 = sig_mid;
             sig2 = sig_all;
         }
     }
     else
     {
-        //cout << "Generating two signature with partial content: ";
         auto sig_mid = CalcMidFileSignature(file, file_size);
         auto sig_head_tail = CalcHeadTailFileSignature(file, file_size);
-        //PrintSignatures(sig_mid, sig_head_tail);
         sig1 = sig_mid;
         sig2 = sig_head_tail;
     }
@@ -153,25 +140,30 @@ bool CrcMatcher::Check(const std::string &file_path) const
         {
             if (found->second == sig2)
             {
-                //cout << "Check: found signature for " << file_path << endl;
                 return true;
             }
         }
     }
 
-    //cout << "Check: could not find signature for " << file_path <<
-    //    ", sig1=" << sig1 << ", sig2=" << sig2 << endl;
     return false;
 }
 
 bool CrcMatcher::Serialize(const string &file_path) const
 {
     ofstream file(file_path, ios::out);
+    if (!file)
+    {
+        cout << "Serialize: unable to open file for write: " << file_path << endl;
+        return false;
+    }
+
     for (auto sig : m_db)
     {
         file << hex << sig.first << " " << sig.second << endl;
     }
+
     file.close();
+
     return true;
 }
 
@@ -180,7 +172,7 @@ bool CrcMatcher::Deserialize(const string &file_path)
     ifstream file(file_path, ios::in);
     if (!file)
     {
-        cout << "Deserialize: file " << file_path << " not found" << endl;
+        cout << "Deserialize: unable to open file for read: " << file_path << endl;
         return false;
     }
 

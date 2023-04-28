@@ -1,6 +1,7 @@
 #pragma once
 
-#include "./signature_matcher.h"
+#include "signature_matcher.h"
+#include "common_defs.h"
 
 #include <map>
 

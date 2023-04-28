@@ -58,7 +58,6 @@ static bool UpdateDigest(EVP_MD_CTX *mdctx, const string &file_path)
     return success;
 }
 
-// Copied from https://stackoverflow.com/questions/2262386/generate-sha256-with-openssl-and-c/10632725
 bool Utils::Sha256File(const string &file_path,
                        unsigned char hash[SHA256_SIZE_BYTES])
 {

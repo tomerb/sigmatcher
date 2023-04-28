@@ -8,5 +8,4 @@ namespace sigmatcher
     typedef std::vector<std::byte> TBuffer;
 
     const int SHA256_SIZE_BYTES = 32;
-    const int MURMURHASH3_SIZE_BYTES = 16;
 }
